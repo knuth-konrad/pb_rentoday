@@ -1,0 +1,21 @@
+# Test data
+DATA/
+DATA 1/
+
+# Executables
+*.exe
+*.dll
+
+# Temp. test & source files, compiler results, logs, backups
+[Bb]ackup.*
+*.ba[k_]
+*.log
+*.tra
+
+# Other tools
+
+# Misc. files
+
+*.txt
+*.cmd
+*.zip
