@@ -16,7 +16,7 @@
 #Dim All
 
 #Debug Error On
-#Tools On
+#Tools Off
 
 DefLng A-Z
 
@@ -197,6 +197,8 @@ Function PBMain()
    Con.StdOut ""
    Con.StdOut "File(s) renamed: " & Format$(dwFileCount)
 
+   PBMain = dwFileCount
+
 End Function
 '------------------------------------------------------------------------------
 
@@ -217,16 +219,16 @@ Sub ShowHelp()
    Print ""
    Print "RENToday Usage:"
    Print "---------------"
-   Print "RENToday /f:<Filename>|/d:<directory with file spec> [/p=<Prefix>] [/o]"
+   Print "RENToday /f=<Filename>|/d=<directory with file spec> [/p=<Prefix>] [/o]"
    Print ""
    Print "i.e."
    Print ""
-   Print "RENToday /f:d:\data\myfile.txt"
+   Print "RENToday /f=d:\data\myfile.txt"
    Print "  will rename th single file d:\data\myfile.txt to 20020228_134228_623.txt, assuming today's date is"
    Print "  February 28th, 2002 and the time is 13:42:28 (and 623 milliseconds)."
    Print "- or -"
    Print ""
-   Print "RENToday /d:d:\data\*.txt"
+   Print "RENToday /d=d:\data\*.txt"
    Print "  will rename each file with the file extension .txt in d:\data\ to 20020228_134228_623.txt, assuming today's date is"
    Print "  February 28th, 2002 and the time is 13:42:28 (and 623 milliseconds) when the first renaming occurs."
    Print "  Of course, the time will be updated for each following renaming process. RENToday implements a 3 millisecond delay"
@@ -234,7 +236,7 @@ Sub ShowHelp()
    Print ""
    Print "Please note: switch /f takes precedence over switch /d."
    Print ""
-   Print "RENToday /f:d:\data\myfile.txt /p=MyPrefix_"
+   Print "RENToday /f=d:\data\myfile.txt /p=MyPrefix_"
    Print "  will rename d:\data\myfile.txt to MyPrefix_20020228.txt, assuming the above example date & time."
    Print ""
    Print "Option /p=<prefix> adds <prefix> in front of the file's name."
