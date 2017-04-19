@@ -6,7 +6,8 @@
 '
 '   Author: Knuth Konrad 15.07.2002
 '   Source: -
-'  Changed: -
+'  Changed: 19.04.2017
+'           - Code reformatting
 '------------------------------------------------------------------------------
 
 '----------------------------------------------------------------------------
@@ -22,7 +23,7 @@ DefLng A-Z
 
 %VERSION_MAJOR = 1
 %VERSION_MINOR = 5
-%VERSION_REVISION = 0
+%VERSION_REVISION = 1
 
 ' Version Resource information
 #Include ".\RENTodayRes.inc"
@@ -70,7 +71,7 @@ Function PBMain()
    ' Application intro
    Print ""
    ConHeadline "RENToday", %VERSION_MAJOR, %VERSION_MINOR, %VERSION_REVISION
-   ConCopyright "2002-2016", $COMPANY_NAME
+   ConCopyright "2002-2017", $COMPANY_NAME
    Print ""
 
    If Len(Trim$(Command$)) < 1 Or InStr(Command$, "/?") > 0  Then
@@ -97,23 +98,6 @@ Function PBMain()
       Let o = Nothing
       Exit Function
    End If
-
-'   Con.StdOut "o.Init       : " & Format$(o.Init(Command$))
-'   Con.StdOut "o.ValuesCount: " & Format$(o.ValuesCount)
-'
-'   Local i As Dword
-'
-'   For i = 1 To o.ValuesCount
-'      Con.StdOut Format$(i, "00") & ")"
-'      Con.StdOut "o.GetParamByIndex: " & o.GetParamByIndex(i)
-'
-'      vnt = o.GetValueByIndex(i)
-'      Trace Print "Format$(VariantVT(vnt): " & Format$(VariantVT(vnt))
-'
-'      Con.StdOut "o.GetValueByIndex: " & Switch$(IsTrue(Variant#(o.GetValueByIndex(i))), "True", IsFalse(Variant#(o.GetValueByIndex(i))), "False")
-'      Con.StdOut "---"
-'   Next i
-
 
    i = o.ValuesCount
    If (i < 1) Or (i > 3) Then
@@ -256,7 +240,8 @@ Function RenFile(ByVal sNew As String, sOrg As String) As Long
 '
 '   Author: Knuth Konrad
 '   Source: -
-'  Changed: -
+'  Changed: 09.02.2017
+'           - File extension was wrongly echoed to command line
 '------------------------------------------------------------------------------
    Local sOld, sExt As String
    Local sMsg, sTemp As String
@@ -277,7 +262,7 @@ Function RenFile(ByVal sNew As String, sOrg As String) As Long
 
    Replace sOld With sTemp In sNew
 
-   sMsg = "-- Scanning for file "
+   sMsg = "- Scanning for file "
    Con.StdOut sMsg & ShortenPathText(sOrg, Con.Screen.Col-(1 + Len(sMsg)))
 
    sTemp = Trim$(Remove$(sOrg, $Dq))
@@ -286,17 +271,17 @@ Function RenFile(ByVal sNew As String, sOrg As String) As Long
    If IsTrue(FileExist(ByCopy sNew)) Then
       If IsTrue(glOverwrite) Then
          Kill sNew
-         Con.StdOut " Renaming " & sOrg
-         Con.StdOut "  -> " & sNew
+         Con.StdOut "  Renaming " & sOrg
+         Con.StdOut "   -> " & sNew
          Name sTemp As sNew
       Else
          Con.Color 4, -1
-         Con.StdOut " Skipping ... " & sNew & " already exists."
+         Con.StdOut "  Skipping ... " & sNew & " already exists."
          Con.Color 7, -1
       End If
    Else
-      Con.StdOut " Renaming " & sOrg
-      Con.StdOut "  -> " & sNew & sExt
+      Con.StdOut "  Renaming " & sOrg
+      Con.StdOut "   -> " & sNew
       Name sTemp As sNew
    End If
 
@@ -328,7 +313,7 @@ sPath = ExtractPath(sNew)
 ' Add closing "
 sPath = Unwrap$(sPath, $Dq, $Dq)
 
-sMsg = "-- Scanning folder "
+sMsg = "- Scanning folder "
 Con.StdOut sMsg & ShortenPathText(sPath, Con.Screen.Col-(1+Len(sMsg)))
 
 'sSourceFile = NormalizePath(sPath) & sFilePattern
@@ -344,9 +329,9 @@ If hSearch <> %INVALID_HANDLE_VALUE Then    ' Loop through directory for files
 
          sTemp = Remove$(udtWFD.cFileName, Any Chr$(0))
 
-         sMsg = " Renaming "
+         sMsg = "  Renaming "
          Con.StdOut  sMsg & ShortenPathText(NormalizePath(sPath) & sTemp, Con.Screen.Col-(1+Len(sMsg)))
-         Con.StdOut "  -> " & NewFileName(NormalizePath(sPath) & sTemp)
+         Con.StdOut "   -> " & NewFileName(NormalizePath(sPath) & sTemp)
          Incr lCount
 
          Try
@@ -356,7 +341,7 @@ If hSearch <> %INVALID_HANDLE_VALUE Then    ' Loop through directory for files
                   Name NormalizePath(sPath) & sTemp As NewFileName(NormalizePath(sPath) & sTemp)
                Else
                   Con.Color 4, -1
-                  Con.StdOut "  Skipping ... " & NewFileName(NormalizePath(sPath) & sTemp) & " already exists."
+                  Con.StdOut "   Skipping ... " & NewFileName(NormalizePath(sPath) & sTemp) & " already exists."
                   Con.Color 7, -1
                End If
             Else
@@ -366,7 +351,7 @@ If hSearch <> %INVALID_HANDLE_VALUE Then    ' Loop through directory for files
          Catch
 
             Con.Color 12, -1
-            sMsg = " ERROR: can't rename "
+            sMsg = "  ERROR: can't rename "
             Con.StdOut  sMsg & ShortenPathText(sTemp, Con.Screen.Col-(1+Len(sMsg)))
             Con.Color 7, -1
             Decr lCount
@@ -400,25 +385,22 @@ Function NewFileName(ByVal sFile As String) As String
 '   Source: -
 '  Changed: -
 '------------------------------------------------------------------------------
+   Local sOld, sOrg, sExt, sTemp As String
+   Local oPTime As IPowerTime
 
-Local sOld As String
-Local sOrg As String
-Local sExt As String
-Local oPTime As IPowerTime, sTemp As String
+   Let oPTime = Class "PowerTime"
+   sTemp = Format$(oPTime.Hour, "00") & "_" & Format$(oPTime.Minute, "00")  & "_" & Format$(oPTime.Second, "00") & "_" & Format$(oPTime.MSecond, "000")
 
-Let oPTime = Class "PowerTime"
-sTemp = Format$(oPTime.Hour, "00") & "_" & Format$(oPTime.Minute, "00")  & "_" & Format$(oPTime.Second, "00") & "_" & Format$(oPTime.MSecond, "000")
+   sExt = Mid$(sFile, GetExtPos(sFile))
 
-sExt = Mid$(sFile, GetExtPos(sFile))
+   oPTime.Now
+   sTemp = gsPrefix & Right$(Date$,4) & Left$(Date$,2) & Mid$(Date$,4,2) & _
+      "_" & Format$(oPTime.Hour, "00") & Format$(oPTime.Minute, "00") & Format$(oPTime.Second, "00") & "_" & Format$(oPTime.MSecond, "000")
+   sOld = ExtractFileName(sFile)
 
-oPTime.Now
-sTemp = gsPrefix & Right$(Date$,4) & Left$(Date$,2) & Mid$(Date$,4,2) & _
-   "_" & Format$(oPTime.Hour, "00") & Format$(oPTime.Minute, "00") & Format$(oPTime.Second, "00") & "_" & Format$(oPTime.MSecond, "000")
-sOld = ExtractFileName(sFile)
+   Replace sOld With sTemp In sFile
 
-Replace sOld With sTemp In sFile
-
-NewFileName = sFile & sExt
+   NewFileName = sFile & sExt
 
 End Function
 '---------------------------------------------------------------------------
