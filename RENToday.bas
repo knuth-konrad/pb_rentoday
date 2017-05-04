@@ -12,7 +12,8 @@
 
 '----------------------------------------------------------------------------
 '*** PROGRAMM/COMPILE OPTIONEN ***
-#Compile Exe "RENToday.exe"
+#Compile Exe ".\RENToday.exe"
+#Break On
 #Option Version5
 #Dim All
 
@@ -23,7 +24,7 @@ DefLng A-Z
 
 %VERSION_MAJOR = 1
 %VERSION_MINOR = 5
-%VERSION_REVISION = 1
+%VERSION_REVISION = 2
 
 ' Version Resource information
 #Include ".\RENTodayRes.inc"

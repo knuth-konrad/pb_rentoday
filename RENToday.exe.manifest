@@ -5,14 +5,14 @@
 	Sample application manifest file:
 -->
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"> 
-  <assemblyIdentity version="1.5.0.0"
+  <assemblyIdentity version="1.5.2.0"
      processorArchitecture="X86"
      name="RENToday"
      type="win32"/> 
-  <description>Rename a file like today's date and time</description> 
+  <description>Rename file(s) to today's date and/or time.</description> 
    <dependency>
-		<!--
       <dependentAssembly>
+      <!--
          <assemblyIdentity 
 				 type="win32" 
 				 name="Microsoft.Windows.Common-Controls" 
@@ -20,8 +20,8 @@
 				 processorArchitecture="X86" 
 				 publicKeyToken="6595b64144ccf1df" 
 				 language="*" />
-		   </dependentAssembly>
 			-->
+		   </dependentAssembly>
    </dependency>
   <!-- Identify the application security requirements. -->
   <!-- 
