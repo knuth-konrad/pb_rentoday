@@ -8,6 +8,9 @@
 '   Source: -
 '  Changed: 19.04.2017
 '           - Code reformatting
+'           15.05.2017
+'           - Application manifest added
+'           - Replace source code include with SLL
 '------------------------------------------------------------------------------
 
 '----------------------------------------------------------------------------
@@ -16,6 +19,8 @@
 #Break On
 #Option Version5
 #Dim All
+
+#Link "baCmdLine.sll"
 
 #Debug Error On
 #Tools Off
@@ -38,7 +43,7 @@ DefLng A-Z
 '*** Declares ***
 '------------------------------------------------------------------------------
 #Include Once "Win32API.inc"
-#Include "IbaCmdLine.inc"
+'#Include "IbaCmdLine.inc"
 #Include "sautilcc.inc"
 '------------------------------------------------------------------------------
 '*** Variabels ***
@@ -209,7 +214,7 @@ Sub ShowHelp()
    Print "i.e."
    Print ""
    Print "RENToday /f=d:\data\myfile.txt"
-   Print "  will rename th single file d:\data\myfile.txt to 20020228_134228_623.txt, assuming today's date is"
+   Print "  will rename the single file d:\data\myfile.txt to 20020228_134228_623.txt, assuming today's date is"
    Print "  February 28th, 2002 and the time is 13:42:28 (and 623 milliseconds)."
    Print "- or -"
    Print ""
