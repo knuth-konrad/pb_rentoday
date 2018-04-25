@@ -22,6 +22,9 @@ Of course, the time will be updated for each following renaming process. RENToda
 __Please note__: switch `/f` takes precedence over switch `/d`.
 
 - `RENToday /f=d:\data\myfile.txt /p=MyPrefix_`    
-Will rename d:\data\myfile.txt to MyPrefix_20020228.txt, assuming the above example's date & time.
+Will rename d:\data\myfile.txt to MyPrefix_20020228_134228_623.txt, assuming the above example's date & time.
 
-Option `/p=<prefix>` adds `<prefix>` in front of the file's name. Option `/o` will overwrite an(y) existing file(s).
+Option `/p=<prefix>` adds `<prefix>` in front of the file's name. If `<prefix>` includes the character '*', the file' 
+original name will be placed at that position, e.g. `RENToday /f=d:\data\myfile.txt /p=MyPrefix_*_` results in MyPrefix_myfile_20020228_134228_623.txt
+
+Option `/o` will overwrite an(y) existing file(s).
