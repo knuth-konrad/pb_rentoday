@@ -8,6 +8,9 @@
 '   Source: -
 '  Changed: 19.04.2017
 '           - Code reformatting
+'           15.05.2017
+'           - Application manifest added
+'           - Replace source code include with SLL
 '------------------------------------------------------------------------------
 
 '----------------------------------------------------------------------------
@@ -17,14 +20,16 @@
 #Option Version5
 #Dim All
 
-#Debug Error On
+#Link "baCmdLine.sll"
+
+#Debug Error Off
 #Tools Off
 
 DefLng A-Z
 
 %VERSION_MAJOR = 1
-%VERSION_MINOR = 5
-%VERSION_REVISION = 2
+%VERSION_MINOR = 6
+%VERSION_REVISION = 0
 
 ' Version Resource information
 #Include ".\RENTodayRes.inc"
@@ -38,7 +43,7 @@ DefLng A-Z
 '*** Declares ***
 '------------------------------------------------------------------------------
 #Include Once "Win32API.inc"
-#Include "IbaCmdLine.inc"
+'#Include "IbaCmdLine.inc"
 #Include "sautilcc.inc"
 '------------------------------------------------------------------------------
 '*** Variabels ***
@@ -72,7 +77,7 @@ Function PBMain()
    ' Application intro
    Print ""
    ConHeadline "RENToday", %VERSION_MAJOR, %VERSION_MINOR, %VERSION_REVISION
-   ConCopyright "2002-2017", $COMPANY_NAME
+   ConCopyright "2002-2018", $COMPANY_NAME
    Print ""
 
    If Len(Trim$(Command$)) < 1 Or InStr(Command$, "/?") > 0  Then
@@ -186,49 +191,6 @@ Function PBMain()
 
 End Function
 '------------------------------------------------------------------------------
-
-Sub ShowHelp()
-'------------------------------------------------------------------------------
-'Purpose  : Show help screen
-'
-'Prereq.  : -
-'Parameter: -
-'Returns  : -
-'Note     : -
-'
-'   Author: Knuth Konrad
-'   Source: -
-'  Changed: -
-'------------------------------------------------------------------------------
-
-   Print ""
-   Print "RENToday Usage:"
-   Print "---------------"
-   Print "RENToday /f=<Filename>|/d=<directory with file spec> [/p=<Prefix>] [/o]"
-   Print ""
-   Print "i.e."
-   Print ""
-   Print "RENToday /f=d:\data\myfile.txt"
-   Print "  will rename th single file d:\data\myfile.txt to 20020228_134228_623.txt, assuming today's date is"
-   Print "  February 28th, 2002 and the time is 13:42:28 (and 623 milliseconds)."
-   Print "- or -"
-   Print ""
-   Print "RENToday /d=d:\data\*.txt"
-   Print "  will rename each file with the file extension .txt in d:\data\ to 20020228_134228_623.txt, assuming today's date is"
-   Print "  February 28th, 2002 and the time is 13:42:28 (and 623 milliseconds) when the first renaming occurs."
-   Print "  Of course, the time will be updated for each following renaming process. RENToday implements a 3 millisecond delay"
-   Print "  internally to ensure that file names are unique."
-   Print ""
-   Print "Please note: switch /f takes precedence over switch /d."
-   Print ""
-   Print "RENToday /f=d:\data\myfile.txt /p=MyPrefix_"
-   Print "  will rename d:\data\myfile.txt to MyPrefix_20020228.txt, assuming the above example date & time."
-   Print ""
-   Print "Option /p=<prefix> adds <prefix> in front of the file's name."
-   Print "Option /o will overwrite an existing file."
-
-End Sub
-'---------------------------------------------------------------------------
 
 Function RenFile(ByVal sNew As String, sOrg As String) As Long
 '------------------------------------------------------------------------------
@@ -384,9 +346,11 @@ Function NewFileName(ByVal sFile As String) As String
 '
 '   Author: Knuth Konrad 15.07.2016
 '   Source: -
-'  Changed: -
+'  Changed: 25.04.2018
+'           - Special charater in prefix: *. If present, the original
+'           file name will be put in there
 '------------------------------------------------------------------------------
-   Local sOld, sOrg, sExt, sTemp As String
+   Local sOld, sOrg, sExt, sTemp, sPrefix As String
    Local oPTime As IPowerTime
 
    Let oPTime = Class "PowerTime"
@@ -394,8 +358,14 @@ Function NewFileName(ByVal sFile As String) As String
 
    sExt = Mid$(sFile, GetExtPos(sFile))
 
+   ' Figure out if the original file name should part of the prefix
+   If InStr(gsPrefix, "*") > 0 Then
+      sPrefix = gsPrefix
+      Replace "*" With ExtractFileName(sFile, %True) In sPrefix
+   End If
+
    oPTime.Now
-   sTemp = gsPrefix & Right$(Date$,4) & Left$(Date$,2) & Mid$(Date$,4,2) & _
+   sTemp = sPrefix & Right$(Date$,4) & Left$(Date$,2) & Mid$(Date$,4,2) & _
       "_" & Format$(oPTime.Hour, "00") & Format$(oPTime.Minute, "00") & Format$(oPTime.Second, "00") & "_" & Format$(oPTime.MSecond, "000")
    sOld = ExtractFileName(sFile)
 
@@ -429,3 +399,49 @@ Function ErrString(ByVal lErr As Long, Optional ByVal vntPrefix As Variant) As S
 
 End Function
 '------------------------------------------------------------------------------
+
+Sub ShowHelp()
+'------------------------------------------------------------------------------
+'Purpose  : Show help screen
+'
+'Prereq.  : -
+'Parameter: -
+'Returns  : -
+'Note     : -
+'
+'   Author: Knuth Konrad
+'   Source: -
+'  Changed: -
+'------------------------------------------------------------------------------
+
+   Print ""
+   Print "RENToday Usage:"
+   Print "---------------"
+   Print "RENToday /f=<Filename>|/d=<directory with file spec> [/p=<Prefix>] [/o]"
+   Print ""
+   Print "e.g."
+   Print ""
+   Print "RENToday /f=d:\data\myfile.txt"
+   Print "  will rename the single file d:\data\myfile.txt to 20020228_134228_623.txt, assuming today's date is"
+   Print "  February 28th, 2002 and the time is 13:42:28 (and 623 milliseconds)."
+   Print "- or -"
+   Print ""
+   Print "RENToday /d=d:\data\*.txt"
+   Print "  will rename each file with the file extension .txt in d:\data\ to 20020228_134228_623.txt, assuming today's date is"
+   Print "  February 28th, 2002 and the time is 13:42:28 (and 623 milliseconds) when the first renaming occurs."
+   Print "  Of course, the time will be updated for each following renaming process. RENToday implements a 3 millisecond delay"
+   Print "  internally to ensure that file names are unique."
+   Print ""
+   Print "Please note: switch /f takes precedence over switch /d."
+   Print ""
+   Print "RENToday /f=d:\data\myfile.txt /p=MyPrefix_"
+   Print "  will rename d:\data\myfile.txt to MyPrefix_20020228.txt, assuming the above example date & time."
+   Print "  Switch /p supports the special character '*'. If present, the original filename will be put at this"
+   Print "  in <prefix>."
+   Print "  E.g. RENToday /f=d:\data\myfile.txt /p=MyPrefix_*_ will result in MyPrefix_myfile_20020228_134228_623.txt"
+   Print ""
+   Print "Option /p=<prefix> adds <prefix> in front of the file's name."
+   Print "Option /o will overwrite an existing file."
+
+End Sub
+'---------------------------------------------------------------------------
