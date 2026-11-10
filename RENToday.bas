@@ -29,7 +29,7 @@ DefLng A-Z
 
 %VERSION_MAJOR = 1
 %VERSION_MINOR = 6
-%VERSION_REVISION = 0
+%VERSION_REVISION = 1
 
 ' Version Resource information
 #Include ".\RENTodayRes.inc"
@@ -51,6 +51,7 @@ DefLng A-Z
 ' Flags retrieved from command line
 Global glOverwrite As Long
 Global gsPrefix As String
+Global glHideConsole As Long
 '==============================================================================
 
 Function PBMain()
@@ -77,7 +78,7 @@ Function PBMain()
    ' Application intro
    Print ""
    ConHeadline "RENToday", %VERSION_MAJOR, %VERSION_MINOR, %VERSION_REVISION
-   ConCopyright "2002-2018", $COMPANY_NAME
+   ConCopyright "2002-2026", $COMPANY_NAME
    Print ""
 
    If Len(Trim$(Command$)) < 1 Or InStr(Command$, "/?") > 0  Then
@@ -91,6 +92,7 @@ Function PBMain()
    ' /d= (directory)
    ' /o= (overwrite)
    ' /p= (prefix)
+   ' /hc= (hide console)
    sCmd = Command$
 
    Local o As IBACmdLine
@@ -106,7 +108,7 @@ Function PBMain()
    End If
 
    i = o.ValuesCount
-   If (i < 1) Or (i > 3) Then
+   If (i < 1) Or (i > 4) Then
       Print "Invalid number of parameters."
       Print ""
       ShowHelp
@@ -137,6 +139,12 @@ Function PBMain()
    End If
 
    ' Prefix?
+   If IsTrue(o.HasParam("hc")) Then
+      sTemp = Variant$(o.GetValueByName("hc"))
+      glHideConsole = %TRUE
+   End If
+
+   ' Hide console
    If IsTrue(o.HasParam("p")) Then
       sTemp = Variant$(o.GetValueByName("p"))
       gsPrefix = Remove$(sTemp, $Dq)
@@ -159,9 +167,16 @@ Function PBMain()
    End If
    Con.StdOut "Overwrite       : " & Choose$(glOverwrite, "True" Else "False")
    Con.StdOut "Prefix          : " & Switch$(Len(gsPrefix) < 1, "<none>", Len(gsPrefix) >= 1, gsPrefix)
+   Con.StdOut "Hide console    : " & Choose$(glHideConsole, "True" Else "False")
    Con.StdOut ""
 
    ' *** We're in business. Rename a single file or files in a folder?
+
+   ' Hide the console window?
+   If IsTrue(glHideConsole) Then
+      Call ShowWindow(Con.Handle, %SW_Hide)
+   End If
+
 
    Local dwFileCount As Dword
    If IsTrue(lFileAction) Then
