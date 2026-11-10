@@ -8,7 +8,7 @@ Rename a file/all files in a folder to today's date (and time)
 
 `RENToday /f=<Filename>|/d=<directory with file spec> [/p=<Prefix>] [/o] [/hc]`
 
-i.e.
+e.g.
 
 - `RENToday /f=d:\data\myfile.txt`  
 Will rename the single file d:\data\myfile.txt to 20020228_134228_623.txt, assuming today's 
